@@ -13,19 +13,17 @@
 //Global counter to turn off mobot for the rest of the demonstration
     int globalcounter = 0;
 
+//distance variables
+      int currentDistance1 = 0; //back ultrasonic sensor
+
 //Servo Motor
     const int SERVO = 10; 
     Servo servo; 
 
 //Back Ultrasonic Sensor 
-    const int TRIGGER_PIN1 = 13; 
-    const int ECHO_PIN1 = 12; 
-    NewPing sonar(TRIGGER_PIN, ECHO_PIN, 30);
-
-//Front Ultrasonic Sensor
-    const int TRIGGER_PIN2 = 13; //These two need to be different pins
-    const int ECHO_PIN2 = 12; 
-    NewPing sonar(TRIGGER_PIN, ECHO_PIN, 30);
+    const int TRIGGER_PIN = 13; 
+    const int ECHO_PIN = 12; 
+    NewPing sonar(TRIGGER_PIN, ECHO_PIN, 60);
 
 //STOP WHEEL MOTORS
     void off (){
@@ -70,24 +68,32 @@
 
 //DRIVING TO DOCK 1
     void dock1(){
+      currentDistance1 = sonar.ping_cm();
       while(currentDistance1 <= 15 && currentDistance1 > 0){ //aribitrary for calibration -> go to infront of loading dock
-      forward(50);
+        currentDistance1 = sonar.ping_cm();
+        forward(starterSpeed);
       }
-      left(starterSpeed,startSpeed); //align claws with the box
+      left(starterSpeed,starterSpeed); //align claws with the box
       delay(1500);
-      while(currentDistance2 <= 10 && currentDistance2 > 0){ //aribitrary for calibration -> go to right in front of box
-      forward(50);
+      currentDistance1 = sonar.ping_cm();
+      while(currentDistance1 <= 10 && currentDistance1 > 0){ //aribitrary for calibration -> go to right in front of box
+        currentDistance1 = sonar.ping_cm();
+        forward(starterSpeed);
       }
     }
 //DRIVING TO DOCK 2
     void dock2(){
+      currentDistance1 = sonar.ping_cm();
       while(currentDistance1 <= 40 && currentDistance1 > 0){ //aribitrary for calibration -> go to infront of loading dock
-      forward(50);
+        currentDistance1 = sonar.ping_cm();
+        forward(starterSpeed);
       }
-      left(starterSpeed,startSpeed); //align claws with the box
+      left(starterSpeed,starterSpeed); //align claws with the box
       delay(1500);
-      while(currentDistance2 <= 10 && currentDistance2 > 0){ //aribitrary for calibration -> go to right in front of box
-      forward(50);
+      currentDistance1 = sonar.ping_cm();
+      while(currentDistance1 <= 10 && currentDistance1 > 0){ //aribitrary for calibration -> go to right in front of box
+        currentDistance1 = sonar.ping_cm();
+        forward(starterSpeed);
       }
     }
 
@@ -95,14 +101,16 @@
     void lower(){
       servo.write(120);
       delay(500);
-      forward(50); //hook onto package
+      forward(starterSpeed); //hook onto package
       delay(250);
       servo.write(40);
       delay(250);
-      while(currentDistance2 <= 10 && currentDistance2 > 0){ //aribitrary for calibration -> go out of dock
-        back(50);
+      currentDistance1 = sonar.ping_cm();
+      while(currentDistance1 <= 10 && currentDistance1 > 0){ //aribitrary for calibration -> go out of dock
+        currentDistance1 = sonar.ping_cm();
+        back(starterSpeed);
       }
-      right(50); //face going towards loading
+      right(starterSpeed,starterSpeed); //face going towards loading
       delay(250);
     }
 
@@ -110,54 +118,60 @@
    void upper(){
       servo.write(180);
       delay(250);
-      forward(50); //hook onto package
+      forward(starterSpeed); //hook onto package
       delay(250);
       servo.write(40);
       delay(250);
-      while(currentDistance2 <= 10 && currentDistance2 > 0){ //aribitrary for calibration -> go out of dock
+      currentDistance1 = sonar.ping_cm();
+      while(currentDistance1 <= 10 && currentDistance1 > 0){ //aribitrary for calibration -> go out of dock
+        currentDistance1 = sonar.ping_cm();
         back(50);
       }
-      right(50); //face going towards loading
+      right(starterSpeed,starterSpeed); //face going towards loading
       delay(250);
     }
 
 //DOCK 1/2 -> LOADING DOCK
   void load(){
+      currentDistance1 = sonar.ping_cm();
       while(currentDistance1 <= 30 && currentDistance1 > 0){ //aribitrary for calibration -> go from either dock to aligned with loading dock
-      forward(50);
+        currentDistance1 = sonar.ping_cm();
+        forward(starterSpeed);
       }
       delay(250);
-      left(50); //face the box
+      left(starterSpeed,starterSpeed); //face the box
       delay(750); 
   }
 //PUTTING BOX DOWN
     void unloading(){
       servo.write(0);
       delay(250);
+      currentDistance1 = sonar.ping_cm();
       while(currentDistance1 <= 10 && currentDistance1 > 0){ //aribitrary for calibration -> go to infront of loading dock
-      back(50);
+        currentDistance1 = sonar.ping_cm();
+        back(starterSpeed);
       }
       delay(250);
-      left(50); //line up to drive back to starting area
+      left(starterSpeed,starterSpeed); //line up to drive back to starting area
       delay(250);
-      while(currentDistance2 <= 10 && currentDistance2 > 0){ //aribitrary for calibration -> go to infront of loading dock
-      forward(50);
+      currentDistance1 = sonar.ping_cm();
+      while(currentDistance1 <= 30 && currentDistance1 > 0){ //aribitrary for calibration -> go back to starting area
+        currentDistance1 = sonar.ping_cm();
+        forward(starterSpeed);
       }
     }
 
 void setup() {
+  off();
   Serial.begin(9600);
   servo.attach(SERVO);
   servo.write(0);
 }
 void loop() {
   //debugger variables:
-      int currentDistance1 = sonar.ping_cm(); //back ultrasonic sensor
-      int currentDistance2 = sonar.ping_cm(); //front ultrasonic sensor
+      currentDistance1 = sonar.ping_cm(); //back ultrasonic sensor
       //Serial.print("current distance is")
       //Serial.println(currentDistance1);
-      //Serial.print("current distance is")
-      //Serial.println(currentDistance2);
 
   //IMPORTANT FOR SWITCHING SHELVES
   int shelf = 1; //This will control what cases we call -> 1 for dock 1; 2 for dock 2
@@ -165,14 +179,12 @@ void loop() {
     int height = 0;
 
   switch(shelf){
-    case = 1: //loading dock 1
+    case 1: //loading dock 1
       if(height == 0){
         dock1();
         lower();
         load();
         unloading();
-        forward(50);
-        delay(5000);
         globalcounter++;
         while(globalcounter >= 1){
           off();
@@ -182,26 +194,21 @@ void loop() {
         upper();
         load();
         unloading();
-        forward(50);
-        delay(5000);
         globalcounter++;
         while(globalcounter >= 1){
           off();
         }
       } else{
-        Serial.println("Fix your code")
-      }
+        Serial.println("Fix your code");
       }
       break;
 
-    case = 2: // loading dock 2
-        if(height == 1){
+    case 2: // loading dock 2
+        if(height == 0){
           dock2();
           lower();
           load();
           unloading();
-          forward(50);
-          delay(5000);
         globalcounter++;
         while(globalcounter >= 1){
           off();
@@ -216,7 +223,7 @@ void loop() {
           off();
         }
       } else{
-          Serial.println("Fix your code")
+          Serial.println("Fix your code");
       }
       break;
   }
