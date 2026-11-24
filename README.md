@@ -23,7 +23,7 @@
 //Back Ultrasonic Sensor 
     const int TRIGGER_PIN = 13; 
     const int ECHO_PIN = 12; 
-    NewPing sonar(TRIGGER_PIN, ECHO_PIN, 60);
+    NewPing sonar(TRIGGER_PIN, ECHO_PIN, 400); //should be changed (max value it can measure is 400cm ~ 13.7ft)
 
 //STOP WHEEL MOTORS
     void off (){
@@ -69,32 +69,43 @@
 //DRIVING TO DOCK 1
     void dock1(){
       currentDistance1 = sonar.ping_cm();
-      while(currentDistance1 <= 15 && currentDistance1 > 0){ //aribitrary for calibration -> go to infront of loading dock
+      while(currentDistance1 <= 100 && currentDistance1 > 0){ //aribitrary for calibration -> go to infront of loading dock
         currentDistance1 = sonar.ping_cm();
         forward(starterSpeed);
+        delay(30);
       }
+      off();
       left(starterSpeed,starterSpeed); //align claws with the box
       delay(1500);
+      off();
       currentDistance1 = sonar.ping_cm();
-      while(currentDistance1 <= 10 && currentDistance1 > 0){ //aribitrary for calibration -> go to right in front of box
+      while(currentDistance1 <= 50 && currentDistance1 > 0){ //aribitrary for calibration -> go to right in front of box
         currentDistance1 = sonar.ping_cm();
         forward(starterSpeed);
+        delay(30);
       }
+      off();
     }
 //DRIVING TO DOCK 2
     void dock2(){
       currentDistance1 = sonar.ping_cm();
-      while(currentDistance1 <= 40 && currentDistance1 > 0){ //aribitrary for calibration -> go to infront of loading dock
+      while(currentDistance1 <= 200 && currentDistance1 > 0){ //aribitrary for calibration -> go to infront of loading dock
         currentDistance1 = sonar.ping_cm();
         forward(starterSpeed);
+        delay(30);
       }
+      off();
+      delay(200);
       left(starterSpeed,starterSpeed); //align claws with the box
       delay(1500);
+      off();
       currentDistance1 = sonar.ping_cm();
-      while(currentDistance1 <= 10 && currentDistance1 > 0){ //aribitrary for calibration -> go to right in front of box
+      while(currentDistance1 <= 50 && currentDistance1 > 0){ //aribitrary for calibration -> go to right in front of box
         currentDistance1 = sonar.ping_cm();
         forward(starterSpeed);
+        delay(30);
       }
+      off();
     }
 
 //LIFTING FOR LOWER SHELF
@@ -103,15 +114,19 @@
       delay(500);
       forward(starterSpeed); //hook onto package
       delay(250);
+      off();
       servo.write(40);
       delay(250);
       currentDistance1 = sonar.ping_cm();
-      while(currentDistance1 <= 10 && currentDistance1 > 0){ //aribitrary for calibration -> go out of dock
+      while(currentDistance1 >= 20 && currentDistance1 > 0){ //aribitrary for calibration -> go out of dock
         currentDistance1 = sonar.ping_cm();
         back(starterSpeed);
+        delay(30);
       }
+      off();
       right(starterSpeed,starterSpeed); //face going towards loading
       delay(250);
+      off();
     }
 
 //LIFTING FOR UPPER SHELF
@@ -120,49 +135,73 @@
       delay(250);
       forward(starterSpeed); //hook onto package
       delay(250);
+      off();
       servo.write(40);
       delay(250);
       currentDistance1 = sonar.ping_cm();
-      while(currentDistance1 <= 10 && currentDistance1 > 0){ //aribitrary for calibration -> go out of dock
+      while(currentDistance1 >= 20 && currentDistance1 > 0){ //aribitrary for calibration -> go out of dock
         currentDistance1 = sonar.ping_cm();
         back(50);
+        delay(30);
       }
+      off();
       right(starterSpeed,starterSpeed); //face going towards loading
       delay(250);
+      off();
     }
 
 //DOCK 1/2 -> LOADING DOCK
   void load(){
       currentDistance1 = sonar.ping_cm();
-      while(currentDistance1 <= 30 && currentDistance1 > 0){ //aribitrary for calibration -> go from either dock to aligned with loading dock
+      while(currentDistance1 <= 20 && currentDistance1 > 0){ //aribitrary for calibration -> go from either dock to aligned with loading dock
         currentDistance1 = sonar.ping_cm();
         forward(starterSpeed);
+        delay(30);
       }
+      off();
       delay(250);
       left(starterSpeed,starterSpeed); //face the box
       delay(750); 
+      off();
+      currentDistance1 = sonar.ping_cm();
+      while(currentDistance1 <= 70 && currentDistance1 > 0){ //aribitrary for calibration -> go to right in front of loading dock
+        currentDistance1 = sonar.ping_cm();
+        forward(starterSpeed);
+        delay(30);
+      }
+      off();
   }
 //PUTTING BOX DOWN
     void unloading(){
       servo.write(0);
       delay(250);
       currentDistance1 = sonar.ping_cm();
-      while(currentDistance1 <= 10 && currentDistance1 > 0){ //aribitrary for calibration -> go to infront of loading dock
+      while(currentDistance1 >= 10 && currentDistance1 > 0){ //aribitrary for calibration -> go to infront of loading dock
         currentDistance1 = sonar.ping_cm();
         back(starterSpeed);
+        delay(30);
       }
+      off();
       delay(250);
       left(starterSpeed,starterSpeed); //line up to drive back to starting area
       delay(250);
+      off();
       currentDistance1 = sonar.ping_cm();
-      while(currentDistance1 <= 30 && currentDistance1 > 0){ //aribitrary for calibration -> go back to starting area
+      while(currentDistance1 <= 300 && currentDistance1 > 0 ){ //aribitrary for calibration -> go back to starting area
         currentDistance1 = sonar.ping_cm();
         forward(starterSpeed);
+        delay(30);
       }
+      off();
     }
 
 void setup() {
-  off();
+    pinMode(LEFT_MOTORS_SP, OUTPUT);
+    pinMode(RIGHT_MOTORS_SP, OUTPUT);
+    pinMode(LEFT_MOTOR_DIR, OUTPUT);
+    pinMode(RIGHT_MOTOR_DIR, OUTPUT);
+    pinMode(MOTOR_OUTPUT, OUTPUT);
+
   Serial.begin(9600);
   servo.attach(SERVO);
   servo.write(0);
